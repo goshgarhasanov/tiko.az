@@ -704,5 +704,58 @@ function debounce(fn, delay) {
   };
 }
 
+// ────────────────────────────────────────────────────────────
+//  Demo / screenshot rejimi (?demo=settings, ?demo=mid, ?demo=win, ?demo=stats)
+// ────────────────────────────────────────────────────────────
+function maybeRunDemo() {
+  const params = new URLSearchParams(window.location.search);
+  const demo = params.get("demo");
+  if (!demo) return;
+
+  setTimeout(() => {
+    if (demo === "settings") {
+      openModal(dom.modalSettings);
+    } else if (demo === "stats") {
+      // Bir az statistika doldurur ki, modal mənalı görünsün.
+      state.stats.totalGames = 24;
+      state.stats.xWins = 14;
+      state.stats.oWins = 7;
+      state.stats.draws = 3;
+      state.stats.totalMoves = 156;
+      state.stats.bestStreak = 5;
+      state.stats.currentStreak = 3;
+      state.stats.fastestWinMoves = 5;
+      state.stats.totalDurationMs = 18 * 60 * 1000;
+      state.stats.byDifficulty.easy = { games: 4, humanWins: 4 };
+      state.stats.byDifficulty.medium = { games: 8, humanWins: 6 };
+      state.stats.byDifficulty.hard = { games: 9, humanWins: 4 };
+      state.stats.byDifficulty.impossible = { games: 3, humanWins: 0 };
+      state.stats.achievements = [
+        { key: "achievement.firstWin", unlockedAt: Date.now() },
+        { key: "achievement.streak3", unlockedAt: Date.now() },
+        { key: "achievement.fastWin", unlockedAt: Date.now() },
+        { key: "achievement.beatHard", unlockedAt: Date.now() },
+      ];
+      openStats();
+    } else if (demo === "mid") {
+      // Bir neçə gediş simulyasiya edirik.
+      [4, 0, 8, 2].forEach((i) => {
+        try { applyMove(i); } catch {}
+      });
+    } else if (demo === "win") {
+      // X qələbə qazanır (qalib xətti vurğulanır).
+      [4, 0, 1, 5, 7, 3].forEach((i) => {
+        try { applyMove(i); } catch {}
+      });
+    } else if (demo === "history") {
+      [4, 0, 8, 2, 1].forEach((i) => {
+        try { applyMove(i); } catch {}
+      });
+      openHistory();
+    }
+  }, 250);
+}
+
 // İşə sal
 init();
+maybeRunDemo();

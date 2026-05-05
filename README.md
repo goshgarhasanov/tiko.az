@@ -10,9 +10,31 @@
 [![Lisenziya: MIT](https://img.shields.io/badge/lisenziya-MIT-A8A8C0)](LICENSE)
 [![No build](https://img.shields.io/badge/build-yox%20%E2%80%94%20saf%20vanilla-84CC16)]()
 
-**🎮 Canlı demo:** https://goshgarhasanzadeh.github.io/tiko.az/
+**🎮 Canlı demo:** https://goshgarhasanov.github.io/tiko.az/
+
+<br/>
+
+<img src="assets/screenshots/01-main.png" width="900" alt="Tiko.az əsas pəncərə" />
 
 </div>
+
+---
+
+## 📸 Ekran görüntüləri
+
+<table>
+<tr>
+<td width="50%" align="center"><b>🎯 Yeni oyun menyusu</b><br/>Vizual kart seçicilər, rəng-kodlu chip-lər, mini grid preview-ləri<br/><br/><img src="assets/screenshots/02-menu.png" alt="Yeni dizaynlı menyu" /></td>
+<td width="50%" align="center"><b>🎮 Oyun gedişində</b><br/>Aktiv oyunçu vurğulanır, sonuncu gediş vurğulu<br/><br/><img src="assets/screenshots/03-midgame.png" alt="Oyun mərkəzində" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>🏆 Qələbə ekranı</b><br/>Qalib xətti vurğulanır, konfetti, təkrar oxutma<br/><br/><img src="assets/screenshots/04-win.png" alt="Qələbə dialoqu" /></td>
+<td width="50%" align="center"><b>📊 Lifetime statistika</b><br/>Çətinlik üzrə bölgü, naqqaşlar, qələbə faizi<br/><br/><img src="assets/screenshots/05-stats.png" alt="Statistika modal" /></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><b>📱 Mobil görkəm (420px)</b> — kart-lar stack olunur, hər şey rahat ölçülənir<br/><br/><img src="assets/screenshots/06-mobile-menu.png" alt="Mobil menyu" width="380" /></td>
+</tr>
+</table>
 
 ---
 

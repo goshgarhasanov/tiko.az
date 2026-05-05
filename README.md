@@ -59,14 +59,14 @@
 
 ### 1) Birbaşa brauzerdə (canlı demo)
 
-👉 [**Burada oyna**](https://goshgarhasanzadeh.github.io/tiko.az/)
+👉 [**Burada oyna**](https://goshgarhasanov.github.io/tiko.az/)
 
 ### 2) Lokal olaraq
 
 ES modul-ları işlətmək üçün local HTTP server lazımdır (file:// işləməz):
 
 ```bash
-git clone https://github.com/goshgarhasanzadeh/tiko.az.git
+git clone https://github.com/goshgarhasanov/tiko.az.git
 cd tiko.az
 python -m http.server 8000
 # brauzerdə aç: http://localhost:8000/

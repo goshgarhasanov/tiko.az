@@ -3,7 +3,7 @@
 import { createGame, makeMove, undoMove, redoMove, resetGame, totalMoves, moves } from "./core/game.js";
 import { indexToNotation } from "./core/notation.js";
 import { pickMove } from "./ai/difficulty.js";
-import { renderBoard, syncFromBoard, updateCell, clearHighlights } from "./ui/board-view.js";
+import { renderBoard, syncFromBoard, updateCell, clearHighlights, drawWinningLine } from "./ui/board-view.js";
 import { burst as confettiBurst } from "./ui/confetti.js";
 import { openModal, closeModal, wireDataCloseButtons } from "./ui/modal.js";
 import { showToast, setToastElement } from "./ui/toast.js";
@@ -249,6 +249,8 @@ function rerenderBoard() {
     winningLine: state.game.winningLine,
     lastIndex: lastMoveIndex(),
   });
+  // Lövhə yenidən qurulanda strikethrough silinir; əgər oyun bitibsə, yenidən çəkilir.
+  drawWinningLine(dom.board, state.game.status === "won" ? state.game.winningLine : null);
 }
 
 function lastMoveIndex() {
@@ -336,13 +338,15 @@ function onGameEnd() {
     state.matchScore[state.game.winner] += 1;
     playWin();
     if (state.settings.confetti) confettiBurst(dom.confetti);
+    // Qalib xanaların üzərindən parlaq qradient xətt çək
+    drawWinningLine(dom.board, state.game.winningLine);
   } else {
     state.matchScore.draws += 1;
     playDraw();
   }
 
   state.stats = recordGame(state.stats, state.game, {
-    humanMark: state.settings.mode === "pvc" ? "X" : "X", // PvP-də X-i fərz edirik
+    humanMark: state.settings.mode === "pvc" ? "X" : "X",
     difficulty: state.settings.difficulty,
     boardSize: Number(state.settings.boardSize),
   });
@@ -356,7 +360,8 @@ function onGameEnd() {
     showToast(`🏅 ${t(newAchievements[0])}`);
   }
 
-  showResultModal();
+  // Pop-up 3 saniyədən sonra göstərilir — istifadəçi qalib xəttini görsün
+  setTimeout(() => showResultModal(), 3000);
   updatePlayerCards();
   updateMeta();
 }

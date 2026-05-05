@@ -1,0 +1,81 @@
+/* Dizayn token-ləri — rəng, məsafə, künc, kölgə.
+   Mövzu (data-theme) və skin (data-skin) ilə dəyişir. */
+
+:root {
+  /* Aksent qradiyenti */
+  --grad-1: #6366F1;
+  --grad-2: #D946EF;
+  --grad-3: #F59E0B;
+
+  /* Sabit aksentlər */
+  --color-x: #06B6D4;
+  --color-o: #F43F5E;
+  --color-success: #84CC16;
+  --color-warn: #FACC15;
+  --color-error: #F43F5E;
+  --color-violet: #8B5CF6;
+
+  /* Şriftlər */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Consolas", "Menlo", monospace;
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+
+  /* Boşluqlar */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Künc radiusları */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Animasiya zamanlamaları */
+  --t-fast: 120ms;
+  --t-base: 200ms;
+  --t-slow: 360ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ───────── Tünd mövzu (standart) ───────── */
+[data-theme="dark"] {
+  --color-bg-deepest: #0B0B12;
+  --color-bg-base:    #0F0F1A;
+  --color-bg-card:    #16162B;
+  --color-bg-elevated:#1F1F38;
+  --color-bg-overlay: #2A2A48;
+  --color-border:     #2D2D4A;
+  --color-text:       #F4F4FA;
+  --color-text-muted: #A8A8C0;
+  --color-text-dim:   #6B6B8A;
+  --color-accent:     var(--grad-1);
+  --shadow-card:      0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-elev:      0 12px 48px rgba(0, 0, 0, 0.6);
+  --glow:             0 0 24px rgba(217, 70, 239, 0.45);
+}
+
+/* ───────── Açıq mövzu ───────── */
+[data-theme="light"] {
+  --color-bg-deepest: #ECECF4;
+  --color-bg-base:    #F4F4FA;
+  --color-bg-card:    #FFFFFF;
+  --color-bg-elevated:#FAFAFC;
+  --color-bg-overlay: #ECECF4;
+  --color-border:     #DBDBE7;
+  --color-text:       #0B0B12;
+  --color-text-muted: #4A4A65;
+  --color-text-dim:   #8888A4;
+  --color-accent:     var(--grad-1);
+  --shadow-card:      0 4px 18px rgba(99, 102, 241, 0.08);
+  --shadow-elev:      0 12px 36px rgba(99, 102, 241, 0.12);
+  --glow:             0 0 24px rgba(217, 70, 239, 0.3);
+}

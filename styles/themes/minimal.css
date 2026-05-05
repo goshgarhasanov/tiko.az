@@ -1,0 +1,33 @@
+/* Minimal skin — sakit, mətn-əsaslı */
+[data-skin="minimal"] {
+  --color-x: #1A1A2E;
+  --color-o: #6B6B8A;
+}
+
+[data-theme="dark"][data-skin="minimal"] {
+  --color-x: #F4F4FA;
+  --color-o: #A8A8C0;
+}
+
+[data-skin="minimal"] .board {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+[data-skin="minimal"] .cell {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+}
+
+[data-skin="minimal"] .cell:hover {
+  background: var(--color-bg-overlay);
+  transform: none;
+  box-shadow: none;
+}
+
+[data-skin="minimal"] .cell[data-winning="true"] {
+  background: var(--color-bg-overlay);
+  box-shadow: inset 0 0 0 2px var(--grad-2);
+}

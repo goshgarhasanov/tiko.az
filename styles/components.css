@@ -1,0 +1,541 @@
+/* Yenidən istifadə oluna bilən komponentlər */
+
+/* ───── Düymələr ───── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease-out),
+              background var(--t-base) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-primary {
+  background: linear-gradient(120deg, var(--grad-1), var(--grad-2));
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:hover { box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45); }
+
+.btn-secondary {
+  background: var(--color-bg-overlay);
+  color: var(--color-text);
+}
+
+.btn-secondary:hover { background: var(--color-border); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.btn-ghost:hover {
+  background: var(--color-bg-overlay);
+  color: var(--color-text);
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  font-size: 18px;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: background var(--t-base), color var(--t-base), transform var(--t-fast);
+}
+
+.icon-btn:hover {
+  background: var(--color-bg-overlay);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.icon-btn[aria-pressed="true"] {
+  background: var(--color-bg-overlay);
+  color: var(--grad-2);
+}
+
+/* ───── Status zolağı (lövhə üstündə) ───── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 540px;
+  background: var(--color-bg-card);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.status-bar__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.status-bar__timer {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ───── Lövhə ───── */
+.board {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elev);
+  position: relative;
+  /* Ölçü scripts/ui/board-view.js tərəfindən təyin olunur */
+}
+
+.cell {
+  --cell-size: 110px;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: calc(var(--cell-size) * 0.55);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--t-base) var(--ease-out),
+              transform var(--t-fast) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out);
+  user-select: none;
+}
+
+.cell:hover {
+  background: var(--color-bg-overlay);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.cell:focus-visible {
+  outline: 2px solid var(--grad-2);
+  outline-offset: 3px;
+}
+
+.cell[disabled] { cursor: default; }
+.cell[disabled]:hover { transform: none; box-shadow: none; background: var(--color-bg-elevated); }
+
+.cell[data-mark="X"] { color: var(--color-x); }
+.cell[data-mark="O"] { color: var(--color-o); }
+
+/* Sonuncu gediş — yumşaq vurğu */
+.cell[data-last="true"] {
+  box-shadow: inset 0 0 0 2px var(--grad-2);
+}
+
+/* Qalib xətti üzərindəki xanalar */
+.cell[data-winning="true"] {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(217, 70, 239, 0.18));
+  box-shadow: inset 0 0 0 2px var(--grad-3), 0 0 24px rgba(245, 158, 11, 0.4);
+  animation: cellPulse 1.4s ease-in-out infinite;
+}
+
+/* İpucu (settings.hints) */
+.cell[data-hint="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed var(--color-text-dim);
+  border-radius: var(--radius-md);
+  opacity: 0.5;
+}
+
+/* Hover preview (kölgə X/O) */
+.cell:not([data-mark]):hover::before {
+  content: attr(data-preview);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--cell-size) * 0.55);
+  color: var(--color-text-dim);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ───── Lövhə alət sırası ───── */
+.board-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 540px;
+}
+
+/* ───── Oyunçu kartları ───── */
+.player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 2px solid transparent;
+  transition: border-color var(--t-base), transform var(--t-base);
+}
+
+.player-card[data-active="true"] {
+  border-color: var(--grad-2);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card), var(--glow);
+}
+
+.player-card__symbol {
+  font-size: 56px;
+  line-height: 1;
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.player-card[data-mark="X"] .player-card__symbol { color: var(--color-x); }
+.player-card[data-mark="O"] .player-card__symbol { color: var(--color-o); }
+
+.player-card__name {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  word-break: break-word;
+}
+
+.player-card__role {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.player-card__score {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(120deg, var(--grad-1), var(--grad-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-top: var(--space-2);
+}
+
+.player-card__status {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-overlay);
+  margin-top: var(--space-1);
+}
+
+.player-card[data-active="true"] .player-card__status {
+  background: linear-gradient(120deg, var(--grad-1), var(--grad-2));
+  color: #fff;
+}
+
+/* ───── Modal ───── */
+.modal {
+  background: transparent;
+  margin: auto;
+  width: min(580px, 92vw);
+  max-height: 90vh;
+}
+
+.modal::backdrop {
+  background: rgba(11, 11, 18, 0.78);
+  backdrop-filter: blur(10px);
+  animation: backdropFade var(--t-base) var(--ease-out);
+}
+
+.modal__inner {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elev);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalEnter var(--t-slow) var(--ease-out);
+}
+
+.modal--center .modal__inner {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  align-items: center;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal__header h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal__body {
+  padding: var(--space-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.modal__footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* ───── Form sahələri ───── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 0;
+}
+
+.field--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.field--row > label {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.field legend {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-dim);
+  margin-bottom: var(--space-2);
+}
+
+.field label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 14px;
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field select {
+  padding: 10px 12px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--color-text);
+  transition: border-color var(--t-base);
+  width: 100%;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--grad-2);
+  outline: none;
+}
+
+.field input[type="checkbox"],
+.field input[type="radio"] {
+  accent-color: var(--grad-2);
+  width: 16px;
+  height: 16px;
+}
+
+/* ───── Result modal ───── */
+.result__icon {
+  font-size: 80px;
+  line-height: 1;
+  margin-bottom: var(--space-3);
+  animation: bounceIn 600ms var(--ease-out);
+}
+
+.result__title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(120deg, var(--grad-1), var(--grad-2), var(--grad-3));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: var(--space-2);
+}
+
+.result__sub {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+}
+
+.result__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ───── Tarixçə siyahısı ───── */
+.history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--space-2);
+}
+
+.history-list li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.history-list li[data-mark="X"] { color: var(--color-x); }
+.history-list li[data-mark="O"] { color: var(--color-o); }
+
+/* ───── Statistika kartları ───── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.stat-card {
+  background: var(--color-bg-elevated);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.stat-card__label {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card__value {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 800;
+  margin-top: var(--space-1);
+  background: linear-gradient(120deg, var(--grad-1), var(--grad-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.bar {
+  height: 10px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  display: flex;
+}
+
+.bar__seg {
+  height: 100%;
+  transition: width var(--t-slow) var(--ease-out);
+}
+
+.bar__seg--x { background: var(--color-x); }
+.bar__seg--draw { background: var(--color-text-dim); }
+.bar__seg--o { background: var(--color-o); }
+
+.legend {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.legend__dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ───── Toast ───── */
+.toast {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elev);
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-base), transform var(--t-base);
+  z-index: 50;
+}
+
+.toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ───── Konfetti ───── */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}

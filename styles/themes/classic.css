@@ -1,0 +1,7 @@
+/* Klassik skin — standart görkəm */
+[data-skin="classic"] .cell {
+  border-radius: var(--radius-md);
+}
+[data-skin="classic"] .board {
+  background: var(--color-bg-card);
+}

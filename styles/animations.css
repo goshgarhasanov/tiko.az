@@ -1,0 +1,53 @@
+/* Animasiya keyframe-ləri */
+
+@keyframes cellPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes markPop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.cell[data-mark]:not([data-winning="true"]) {
+  animation: markPop 280ms var(--ease-out) both;
+}
+
+@keyframes modalEnter {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes backdropFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.shake { animation: shake 320ms var(--ease-in-out); }
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(217, 70, 239, 0.4); }
+  50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.6); }
+}
+
+/* Animasiyaları söndürmək üçün ümumi sinif (settings.animations) */
+[data-animations="off"] *,
+[data-animations="off"] *::before,
+[data-animations="off"] *::after {
+  animation: none !important;
+  transition: none !important;
+}

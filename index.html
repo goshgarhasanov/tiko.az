@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F0F1A" />
+  <meta name="description" content="Tiko.az — peşəkar X-O oyunu. Çoxlu lövhə ölçüsü, ağıllı AI rəqib, real-time statistika, gözəl interfeys." />
+  <title>Tiko.az · X-O Oyunu</title>
+
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <link rel="stylesheet" href="styles/reset.css" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+  <link rel="stylesheet" href="styles/themes/classic.css" />
+  <link rel="stylesheet" href="styles/themes/neon.css" />
+  <link rel="stylesheet" href="styles/themes/minimal.css" />
+</head>
+<body data-theme="dark" data-skin="classic">
+  <!-- ════════ Aplikasiya kökü ════════ -->
+  <div id="app" class="app">
+
+    <!-- ════════ Yuxarı zolaq ════════ -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand__mark" aria-hidden="true">
+          <span class="brand__x">✕</span><span class="brand__o">◯</span>
+        </div>
+        <div class="brand__text">
+          <h1 class="brand__title">Tiko<span class="brand__dot">.</span>az</h1>
+          <p class="brand__tag">Klassik oyun, müasir görkəm</p>
+        </div>
+      </div>
+
+      <nav class="topbar__actions" aria-label="Əsas alətlər">
+        <button class="icon-btn" id="btn-stats" title="Statistika" aria-label="Statistika">📊</button>
+        <button class="icon-btn" id="btn-history" title="Tarixçə" aria-label="Tarixçə">🕘</button>
+        <button class="icon-btn" id="btn-theme" title="Mövzu dəyişdir" aria-label="Mövzu">🌗</button>
+        <button class="icon-btn" id="btn-sound" title="Səs" aria-label="Səs">🔔</button>
+        <button class="icon-btn" id="btn-settings" title="Tənzimləmələr" aria-label="Tənzimləmələr">⚙</button>
+      </nav>
+    </header>
+
+    <!-- ════════ Əsas oyun sahəsi ════════ -->
+    <main class="board-area" id="screen-game">
+      <!-- Sol panel — oyunçu X -->
+      <aside class="player-card" id="card-x" data-mark="X">
+        <div class="player-card__symbol">✕</div>
+        <div class="player-card__name" id="name-x">Oyunçu 1</div>
+        <div class="player-card__role" id="role-x">İnsan</div>
+        <div class="player-card__score" id="score-x">0</div>
+        <div class="player-card__status" id="status-x">Növbə</div>
+      </aside>
+
+      <!-- Mərkəz — lövhə + status -->
+      <section class="board-wrap">
+        <div class="status-bar" role="status" aria-live="polite">
+          <span class="status-bar__label" id="status-text">Yeni oyun. X başlayır.</span>
+          <span class="status-bar__timer" id="timer">00:00</span>
+        </div>
+
+        <div class="board" id="board" role="grid" aria-label="Oyun lövhəsi"></div>
+
+        <div class="board-toolbar">
+          <button class="btn btn-secondary" id="btn-undo" title="Geri al (Ctrl+Z)">↶ Geri</button>
+          <button class="btn btn-primary" id="btn-restart" title="Yenidən (R)">↻ Yenidən</button>
+          <button class="btn btn-secondary" id="btn-redo" title="Yenidən tətbiq et">↷ İrəli</button>
+          <button class="btn btn-ghost" id="btn-menu">☰ Menyu</button>
+        </div>
+      </section>
+
+      <!-- Sağ panel — oyunçu O -->
+      <aside class="player-card" id="card-o" data-mark="O">
+        <div class="player-card__symbol">◯</div>
+        <div class="player-card__name" id="name-o">AI</div>
+        <div class="player-card__role" id="role-o">Çətin</div>
+        <div class="player-card__score" id="score-o">0</div>
+        <div class="player-card__status" id="status-o">Gözləyir</div>
+      </aside>
+    </main>
+
+    <!-- ════════ Aşağı sayğac zolağı ════════ -->
+    <footer class="scoreboard">
+      <div class="scoreboard__item">
+        <span class="scoreboard__label">Qələbələr X</span>
+        <span class="scoreboard__value" id="meta-x-wins">0</span>
+      </div>
+      <div class="scoreboard__item">
+        <span class="scoreboard__label">Bərabərə</span>
+        <span class="scoreboard__value" id="meta-draws">0</span>
+      </div>
+      <div class="scoreboard__item">
+        <span class="scoreboard__label">Qələbələr O</span>
+        <span class="scoreboard__value" id="meta-o-wins">0</span>
+      </div>
+      <div class="scoreboard__item">
+        <span class="scoreboard__label">Ümumi gediş</span>
+        <span class="scoreboard__value" id="meta-moves">0</span>
+      </div>
+      <div class="scoreboard__item">
+        <span class="scoreboard__label">Seriya</span>
+        <span class="scoreboard__value" id="meta-streak">0</span>
+      </div>
+    </footer>
+
+    <!-- ════════ Modal: Tənzimləmələr ════════ -->
+    <dialog class="modal" id="modal-settings" aria-labelledby="settings-title">
+      <form method="dialog" class="modal__inner">
+        <header class="modal__header">
+          <h2 id="settings-title">⚙ Tənzimləmələr</h2>
+          <button class="icon-btn" value="cancel" aria-label="Bağla">✕</button>
+        </header>
+        <div class="modal__body">
+
+          <fieldset class="field">
+            <legend>Rejim</legend>
+            <label><input type="radio" name="mode" value="pvp" /> İnsan vs İnsan</label>
+            <label><input type="radio" name="mode" value="pvc" checked /> İnsan vs AI</label>
+            <label><input type="radio" name="mode" value="cvc" /> AI vs AI (sınaq)</label>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>AI çətinlik</legend>
+            <label><input type="radio" name="difficulty" value="easy" /> Asan</label>
+            <label><input type="radio" name="difficulty" value="medium" /> Orta</label>
+            <label><input type="radio" name="difficulty" value="hard" checked /> Çətin</label>
+            <label><input type="radio" name="difficulty" value="impossible" /> Mümkünsüz</label>
+          </fieldset>
+
+          <fieldset class="field field--row">
+            <label>
+              Lövhə ölçüsü
+              <select name="boardSize">
+                <option value="3">3 × 3</option>
+                <option value="4">4 × 4</option>
+                <option value="5">5 × 5</option>
+                <option value="6">6 × 6</option>
+                <option value="7">7 × 7</option>
+              </select>
+            </label>
+            <label>
+              Qalib şərti (cərgədə)
+              <select name="winLength">
+                <option value="3">3-lük</option>
+                <option value="4">4-lük</option>
+                <option value="5">5-lük</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="field field--row">
+            <label>
+              Oyunçu 1 adı
+              <input type="text" name="nameX" maxlength="14" placeholder="Oyunçu 1" />
+            </label>
+            <label>
+              Oyunçu 2 adı
+              <input type="text" name="nameO" maxlength="14" placeholder="Oyunçu 2" />
+            </label>
+          </fieldset>
+
+          <fieldset class="field field--row">
+            <label>
+              Mövzu
+              <select name="theme">
+                <option value="dark">Tünd</option>
+                <option value="light">Açıq</option>
+              </select>
+            </label>
+            <label>
+              Skin
+              <select name="skin">
+                <option value="classic">Klassik</option>
+                <option value="neon">Neon</option>
+                <option value="minimal">Minimal</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="field field--row">
+            <label>
+              Hər gediş üçün vaxt (saniyə, 0 = limitsiz)
+              <input type="number" name="moveTime" min="0" max="120" value="0" />
+            </label>
+            <label>
+              Qarşılaşma uzunluğu
+              <select name="matchLength">
+                <option value="1">Tək oyun</option>
+                <option value="3">3-dən ən yaxşısı</option>
+                <option value="5">5-dən ən yaxşısı</option>
+                <option value="7">7-dən ən yaxşısı</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Səs və effektlər</legend>
+            <label><input type="checkbox" name="sound" checked /> Səs effektləri</label>
+            <label><input type="checkbox" name="animations" checked /> Animasiyalar</label>
+            <label><input type="checkbox" name="hints" /> İpucları (vurğulanır)</label>
+            <label><input type="checkbox" name="confetti" checked /> Qələbədə konfetti</label>
+          </fieldset>
+        </div>
+
+        <footer class="modal__footer">
+          <button type="reset" class="btn btn-ghost" id="btn-reset-settings">Standart</button>
+          <button type="submit" value="confirm" class="btn btn-primary">Yadda saxla və başla</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <!-- ════════ Modal: Statistika ════════ -->
+    <dialog class="modal" id="modal-stats" aria-labelledby="stats-title">
+      <div class="modal__inner">
+        <header class="modal__header">
+          <h2 id="stats-title">📊 Lifetime statistika</h2>
+          <button class="icon-btn" data-close aria-label="Bağla">✕</button>
+        </header>
+        <div class="modal__body" id="stats-body">
+          <!-- doldurulur scripts/ui/stats-view.js -->
+        </div>
+        <footer class="modal__footer">
+          <button class="btn btn-ghost" id="btn-stats-reset">Sıfırla</button>
+          <button class="btn btn-primary" data-close>Bağla</button>
+        </footer>
+      </div>
+    </dialog>
+
+    <!-- ════════ Modal: Tarixçə ════════ -->
+    <dialog class="modal" id="modal-history" aria-labelledby="history-title">
+      <div class="modal__inner">
+        <header class="modal__header">
+          <h2 id="history-title">🕘 Gediş tarixçəsi</h2>
+          <button class="icon-btn" data-close aria-label="Bağla">✕</button>
+        </header>
+        <div class="modal__body">
+          <ol id="history-list" class="history-list" aria-label="Gedişlərin siyahısı"></ol>
+        </div>
+        <footer class="modal__footer">
+          <button class="btn btn-secondary" id="btn-replay">▶ Təkrar oxut</button>
+          <button class="btn btn-primary" data-close>Bağla</button>
+        </footer>
+      </div>
+    </dialog>
+
+    <!-- ════════ Modal: Oyun bitdi ════════ -->
+    <dialog class="modal modal--center" id="modal-result" aria-labelledby="result-title">
+      <div class="modal__inner result">
+        <div class="result__icon" id="result-icon">🏆</div>
+        <h2 id="result-title" class="result__title">Qalib: X</h2>
+        <p class="result__sub" id="result-sub">3 gedişdə qələbə</p>
+        <div class="result__actions">
+          <button class="btn btn-primary" id="btn-play-again">↻ Yenidən oyna</button>
+          <button class="btn btn-ghost" id="btn-result-menu">☰ Menyuya qayıt</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- ════════ Toast ════════ -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- ════════ Konfetti kətanı ════════ -->
+    <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+  </div>
+
+  <!-- Klaviatura ipucu (yalnız screen reader üçün) -->
+  <div class="sr-only" aria-live="polite" id="aria-status"></div>
+
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>

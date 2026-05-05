@@ -539,3 +539,22 @@
   pointer-events: none;
   z-index: 100;
 }
+
+/* ───── Müəllif kredi ───── */
+.credit {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-dim);
+  margin-top: var(--space-3);
+  letter-spacing: 0.04em;
+}
+.credit a {
+  background: linear-gradient(120deg, var(--grad-1), var(--grad-2), var(--grad-3));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity var(--t-base);
+}
+.credit a:hover { opacity: 0.7; }

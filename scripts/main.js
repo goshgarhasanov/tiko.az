@@ -23,6 +23,9 @@ const state = {
   matchScore: { X: 0, O: 0, draws: 0 },
   matchGameNumber: 1,
   aiBusy: false,
+  isReplaying: false,
+  replayTimerId: null,
+  pendingAiTimerId: null,
   timer: { elapsedMs: 0, startedAt: null, intervalId: null, moveDeadline: null },
 };
 
@@ -70,7 +73,12 @@ const dom = {
   resultSub:      document.getElementById("result-sub"),
   btnPlayAgain:   document.getElementById("btn-play-again"),
   btnResultMenu:  document.getElementById("btn-result-menu"),
+  btnResultReplay: document.getElementById("btn-result-replay"),
   btnReplay:      document.getElementById("btn-replay"),
+  moveTimeRange:  document.getElementById("moveTimeRange"),
+  moveTimeValue:  document.getElementById("moveTimeValue"),
+  winLengthHint:  document.getElementById("winLengthHint"),
+  sizeGrids:      null, // dynamically queried after wireUp
   btnStatsReset:  document.getElementById("btn-stats-reset"),
   historyList:    document.getElementById("history-list"),
   statsBody:      document.getElementById("stats-body"),
@@ -81,13 +89,97 @@ const dom = {
 // ────────────────────────────────────────────────────────────
 function init() {
   setToastElement(document.getElementById("toast"));
+  buildSizePickGrids();
   applySettingsToDOM();
   setSoundEnabled(state.settings.sound);
   wireDataCloseButtons(document);
   bindEvents();
+  bindMenuControls();
   startNewGame();
   // Pəncərə ölçüsü dəyişəndə lövhəni yenilə (cell-size).
   window.addEventListener("resize", debounce(rerenderBoard, 120));
+}
+
+/** Settings modal-da hər size-pick üçün kiçik grid preview-i yaradır. */
+function buildSizePickGrids() {
+  document.querySelectorAll(".size-pick__grid").forEach((grid) => {
+    const size = Number(grid.dataset.size || 3);
+    grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    grid.replaceChildren();
+    for (let i = 0; i < size * size; i++) {
+      const cell = document.createElement("i");
+      grid.appendChild(cell);
+    }
+  });
+}
+
+/** Menyu daxilindəki dinamik kontrollar — slider, hint, asılılıqlar. */
+function bindMenuControls() {
+  const form = dom.modalSettings.querySelector("form");
+
+  // Vaxt sliderının dəyər etiketi
+  const updateTimeLabel = () => {
+    const v = Number(dom.moveTimeRange.value);
+    dom.moveTimeValue.textContent = v === 0 ? "Limitsiz" : `${v} san`;
+  };
+  dom.moveTimeRange.addEventListener("input", updateTimeLabel);
+  updateTimeLabel();
+
+  // Lövhə ölçüsü dəyişdikdə qalib şərti seçimlərini məhdudlaşdırır
+  const updateWinLengthOptions = () => {
+    const size = Number(form.elements.boardSize.value);
+    const winInputs = form.querySelectorAll('input[name="winLength"]');
+    let activeWin = Number(form.elements.winLength.value);
+    winInputs.forEach((inp) => {
+      const v = Number(inp.value);
+      const wrap = inp.closest(".seg__opt");
+      if (v > size) {
+        wrap.style.display = "none";
+        if (v === activeWin) {
+          // başqa keçərli dəyər seç
+          form.elements.winLength.value = String(Math.min(size, 3));
+          activeWin = Number(form.elements.winLength.value);
+        }
+      } else {
+        wrap.style.display = "";
+      }
+    });
+    if (dom.winLengthHint) {
+      dom.winLengthHint.textContent = `Qalib: ${activeWin} ardıcıl`;
+    }
+  };
+  form.querySelectorAll('input[name="boardSize"]').forEach((inp) => {
+    inp.addEventListener("change", updateWinLengthOptions);
+  });
+  form.querySelectorAll('input[name="winLength"]').forEach((inp) => {
+    inp.addEventListener("change", () => {
+      if (dom.winLengthHint) {
+        dom.winLengthHint.textContent = `Qalib: ${form.elements.winLength.value} ardıcıl`;
+      }
+    });
+  });
+  updateWinLengthOptions();
+
+  // Rejim dəyişdikdə body data-mode-u yeniləyir (CSS asılılıqları üçün)
+  const updateModeAttr = () => {
+    document.body.dataset.mode = form.elements.mode.value;
+  };
+  form.querySelectorAll('input[name="mode"]').forEach((inp) => {
+    inp.addEventListener("change", updateModeAttr);
+  });
+  updateModeAttr();
+
+  // Mövzu / skin canlı önizləmə
+  form.querySelectorAll('input[name="theme"]').forEach((inp) => {
+    inp.addEventListener("change", () => {
+      document.body.dataset.theme = form.elements.theme.value;
+    });
+  });
+  form.querySelectorAll('input[name="skin"]').forEach((inp) => {
+    inp.addEventListener("change", () => {
+      document.body.dataset.skin = form.elements.skin.value;
+    });
+  });
 }
 
 function bindEvents() {
@@ -102,6 +194,7 @@ function bindEvents() {
   dom.btnSound.addEventListener("click", toggleSound);
   dom.btnPlayAgain.addEventListener("click", () => { closeModal(dom.modalResult); nextGameInMatch(); });
   dom.btnResultMenu.addEventListener("click", () => { closeModal(dom.modalResult); openModal(dom.modalSettings); });
+  dom.btnResultReplay.addEventListener("click", () => { closeModal(dom.modalResult); replayGame(); });
   dom.btnReplay.addEventListener("click", () => { closeModal(dom.modalHistory); replayGame(); });
   dom.btnStatsReset.addEventListener("click", () => {
     state.stats = resetStats();
@@ -208,13 +301,17 @@ function applyMove(index) {
 //  AI növbəsi
 // ────────────────────────────────────────────────────────────
 function maybeTriggerAi() {
+  if (state.isReplaying) return;
   if (state.game.status !== "playing") return;
   const role = roleForMark(state.game.current);
   if (role !== "ai") return;
   state.aiBusy = true;
   dom.statusText.textContent = t("status.thinking");
   // Kiçik gecikmə — istifadəçi düşüncənin canlılığını hiss etsin.
-  setTimeout(() => {
+  if (state.pendingAiTimerId) clearTimeout(state.pendingAiTimerId);
+  state.pendingAiTimerId = setTimeout(() => {
+    state.pendingAiTimerId = null;
+    if (state.isReplaying) { state.aiBusy = false; return; }
     const idx = pickMove(state.game.board, state.game.current, state.settings.difficulty);
     state.aiBusy = false;
     if (idx >= 0) applyMove(idx);
@@ -429,9 +526,29 @@ function openHistory() {
 }
 
 function replayGame() {
-  const all = moves(state.game).slice();
-  // Lövhəni sıfırla.
-  resetGame(state.game, { firstMark: state.game.firstMark });
+  // Növbədə olan AI gedişini ləğv et və replay-i başlat.
+  if (state.pendingAiTimerId) {
+    clearTimeout(state.pendingAiTimerId);
+    state.pendingAiTimerId = null;
+  }
+  if (state.replayTimerId) {
+    clearTimeout(state.replayTimerId);
+    state.replayTimerId = null;
+  }
+  state.aiBusy = false;
+  state.isReplaying = true;
+
+  // Bütün gedişləri əvvəldən kopyalayırıq (resetGame tarixçəni təmizləyir).
+  const all = moves(state.game).map((m) => ({ index: m.index, mark: m.mark }));
+
+  if (all.length === 0) {
+    state.isReplaying = false;
+    showToast(t("history.empty"));
+    return;
+  }
+
+  // Lövhəni sıfırla — başlayan həmin oyundakı kimi qalsın.
+  resetGame(state.game, { firstMark: all[0].mark });
   rerenderBoard();
   updatePlayerCards();
   updateStatus();
@@ -439,21 +556,36 @@ function replayGame() {
 
   let i = 0;
   const tick = () => {
-    if (i >= all.length) return;
+    state.replayTimerId = null;
+    if (i >= all.length) {
+      state.isReplaying = false;
+      return;
+    }
     const m = all[i++];
-    makeMove(state.game, m.index);
-    playPlace(m.mark);
+    // makeMove cari oyunçunun işarəsini qoyur — bu, sıralı X→O→X olduğu üçün
+    // m.mark ilə üst-üstə düşür. Lakin bütövlükdə doğruluğu təmin etmək üçün
+    // game.current-i məcburi olaraq m.mark-a bərabərləşdiririk.
+    state.game.current = m.mark;
+    try {
+      makeMove(state.game, m.index);
+      playPlace(m.mark);
+    } catch (e) {
+      // Xanaya artıq qoyulubsa, sadəcə keçid edirik.
+      console.error("Replay xətası:", e);
+    }
     syncFromBoard(dom.board, state.game.board, {
       winningLine: state.game.winningLine,
       lastIndex: m.index,
     });
     updatePlayerCards();
     updateStatus();
-    if (state.game.status === "playing") {
-      setTimeout(tick, 480);
+    if (i < all.length) {
+      state.replayTimerId = setTimeout(tick, 520);
+    } else {
+      state.isReplaying = false;
     }
   };
-  setTimeout(tick, 280);
+  state.replayTimerId = setTimeout(tick, 320);
 }
 
 // ────────────────────────────────────────────────────────────

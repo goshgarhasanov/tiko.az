@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="styles/themes/classic.css" />
   <link rel="stylesheet" href="styles/themes/neon.css" />
   <link rel="stylesheet" href="styles/themes/minimal.css" />
+  <link rel="stylesheet" href="styles/menu.css" />
 </head>
 <body data-theme="dark" data-skin="classic">
   <!-- ════════ Aplikasiya kökü ════════ -->
@@ -107,102 +108,231 @@
     </footer>
 
     <!-- ════════ Modal: Tənzimləmələr ════════ -->
-    <dialog class="modal" id="modal-settings" aria-labelledby="settings-title">
-      <form method="dialog" class="modal__inner">
-        <header class="modal__header">
-          <h2 id="settings-title">⚙ Tənzimləmələr</h2>
-          <button class="icon-btn" value="cancel" aria-label="Bağla">✕</button>
+    <dialog class="modal modal--wide" id="modal-settings" aria-labelledby="settings-title">
+      <form method="dialog" class="modal__inner settings">
+        <header class="settings__hero">
+          <div class="settings__hero-text">
+            <span class="settings__eyebrow">Tənzimləmələr</span>
+            <h2 id="settings-title" class="settings__title">Yeni oyun qurmaq</h2>
+            <p class="settings__sub">Rejimi, çətinliyi və görkəmi öz zövqünə uyğunlaşdır</p>
+          </div>
+          <button type="button" class="icon-btn settings__close" data-close aria-label="Bağla">✕</button>
         </header>
-        <div class="modal__body">
 
-          <fieldset class="field">
-            <legend>Rejim</legend>
-            <label><input type="radio" name="mode" value="pvp" /> İnsan vs İnsan</label>
-            <label><input type="radio" name="mode" value="pvc" checked /> İnsan vs AI</label>
-            <label><input type="radio" name="mode" value="cvc" /> AI vs AI (sınaq)</label>
-          </fieldset>
+        <div class="modal__body settings__body">
 
-          <fieldset class="field">
-            <legend>AI çətinlik</legend>
-            <label><input type="radio" name="difficulty" value="easy" /> Asan</label>
-            <label><input type="radio" name="difficulty" value="medium" /> Orta</label>
-            <label><input type="radio" name="difficulty" value="hard" checked /> Çətin</label>
-            <label><input type="radio" name="difficulty" value="impossible" /> Mümkünsüz</label>
-          </fieldset>
+          <!-- Rejim — vizual kartlar -->
+          <section class="sec">
+            <div class="sec__head">
+              <span class="sec__icon">🎯</span>
+              <h3 class="sec__title">Oyun rejimi</h3>
+            </div>
+            <div class="card-grid card-grid--3">
+              <label class="card-pick">
+                <input type="radio" name="mode" value="pvp" />
+                <div class="card-pick__inner">
+                  <div class="card-pick__icon">👥</div>
+                  <div class="card-pick__title">İnsan · İnsan</div>
+                  <div class="card-pick__desc">Eyni qurğuda iki nəfər</div>
+                </div>
+              </label>
+              <label class="card-pick">
+                <input type="radio" name="mode" value="pvc" checked />
+                <div class="card-pick__inner">
+                  <div class="card-pick__icon">🧠</div>
+                  <div class="card-pick__title">İnsan · AI</div>
+                  <div class="card-pick__desc">Süni intellekt rəqibi</div>
+                </div>
+              </label>
+              <label class="card-pick">
+                <input type="radio" name="mode" value="cvc" />
+                <div class="card-pick__inner">
+                  <div class="card-pick__icon">🤖</div>
+                  <div class="card-pick__title">AI · AI</div>
+                  <div class="card-pick__desc">İzləmə rejimi</div>
+                </div>
+              </label>
+            </div>
+          </section>
 
-          <fieldset class="field field--row">
-            <label>
-              Lövhə ölçüsü
-              <select name="boardSize">
-                <option value="3">3 × 3</option>
-                <option value="4">4 × 4</option>
-                <option value="5">5 × 5</option>
-                <option value="6">6 × 6</option>
-                <option value="7">7 × 7</option>
-              </select>
-            </label>
-            <label>
-              Qalib şərti (cərgədə)
-              <select name="winLength">
-                <option value="3">3-lük</option>
-                <option value="4">4-lük</option>
-                <option value="5">5-lük</option>
-              </select>
-            </label>
-          </fieldset>
+          <!-- AI çətinlik — chip-lər -->
+          <section class="sec" data-show-when="mode!=pvp">
+            <div class="sec__head">
+              <span class="sec__icon">🤖</span>
+              <h3 class="sec__title">AI çətinliyi</h3>
+            </div>
+            <div class="chip-row">
+              <label class="chip" data-tone="success">
+                <input type="radio" name="difficulty" value="easy" />
+                <span class="chip__dot"></span>
+                <span class="chip__label">Asan</span>
+              </label>
+              <label class="chip" data-tone="warn">
+                <input type="radio" name="difficulty" value="medium" />
+                <span class="chip__dot"></span>
+                <span class="chip__label">Orta</span>
+              </label>
+              <label class="chip" data-tone="amber">
+                <input type="radio" name="difficulty" value="hard" checked />
+                <span class="chip__dot"></span>
+                <span class="chip__label">Çətin</span>
+              </label>
+              <label class="chip" data-tone="danger">
+                <input type="radio" name="difficulty" value="impossible" />
+                <span class="chip__dot"></span>
+                <span class="chip__label">Mümkünsüz</span>
+              </label>
+            </div>
+          </section>
 
-          <fieldset class="field field--row">
-            <label>
-              Oyunçu 1 adı
-              <input type="text" name="nameX" maxlength="14" placeholder="Oyunçu 1" />
-            </label>
-            <label>
-              Oyunçu 2 adı
-              <input type="text" name="nameO" maxlength="14" placeholder="Oyunçu 2" />
-            </label>
-          </fieldset>
+          <!-- Lövhə ölçüsü — vizual grid preview-ləri -->
+          <section class="sec">
+            <div class="sec__head">
+              <span class="sec__icon">🎲</span>
+              <h3 class="sec__title">Lövhə ölçüsü</h3>
+              <span class="sec__hint" id="winLengthHint">Qalib: 3 ardıcıl</span>
+            </div>
+            <div class="size-row">
+              <label class="size-pick"><input type="radio" name="boardSize" value="3" checked />
+                <span class="size-pick__inner">
+                  <span class="size-pick__grid" data-size="3"></span>
+                  <span class="size-pick__label">3 × 3</span>
+                </span>
+              </label>
+              <label class="size-pick"><input type="radio" name="boardSize" value="4" />
+                <span class="size-pick__inner">
+                  <span class="size-pick__grid" data-size="4"></span>
+                  <span class="size-pick__label">4 × 4</span>
+                </span>
+              </label>
+              <label class="size-pick"><input type="radio" name="boardSize" value="5" />
+                <span class="size-pick__inner">
+                  <span class="size-pick__grid" data-size="5"></span>
+                  <span class="size-pick__label">5 × 5</span>
+                </span>
+              </label>
+              <label class="size-pick"><input type="radio" name="boardSize" value="6" />
+                <span class="size-pick__inner">
+                  <span class="size-pick__grid" data-size="6"></span>
+                  <span class="size-pick__label">6 × 6</span>
+                </span>
+              </label>
+              <label class="size-pick"><input type="radio" name="boardSize" value="7" />
+                <span class="size-pick__inner">
+                  <span class="size-pick__grid" data-size="7"></span>
+                  <span class="size-pick__label">7 × 7</span>
+                </span>
+              </label>
+            </div>
+            <!-- Qalib şərti slider/segmented -->
+            <div class="seg" role="radiogroup" aria-label="Qalib şərti">
+              <label class="seg__opt"><input type="radio" name="winLength" value="3" checked /><span>3 ardıcıl</span></label>
+              <label class="seg__opt"><input type="radio" name="winLength" value="4" /><span>4 ardıcıl</span></label>
+              <label class="seg__opt"><input type="radio" name="winLength" value="5" /><span>5 ardıcıl</span></label>
+            </div>
+          </section>
 
-          <fieldset class="field field--row">
-            <label>
-              Mövzu
-              <select name="theme">
-                <option value="dark">Tünd</option>
-                <option value="light">Açıq</option>
-              </select>
-            </label>
-            <label>
-              Skin
-              <select name="skin">
-                <option value="classic">Klassik</option>
-                <option value="neon">Neon</option>
-                <option value="minimal">Minimal</option>
-              </select>
-            </label>
-          </fieldset>
+          <!-- Oyunçu adları -->
+          <section class="sec">
+            <div class="sec__head">
+              <span class="sec__icon">👤</span>
+              <h3 class="sec__title">Oyunçu adları</h3>
+            </div>
+            <div class="name-row">
+              <div class="name-input">
+                <span class="name-input__symbol" style="color: var(--color-x)">✕</span>
+                <input type="text" name="nameX" maxlength="14" placeholder="Oyunçu 1" />
+              </div>
+              <div class="name-input">
+                <span class="name-input__symbol" style="color: var(--color-o)">◯</span>
+                <input type="text" name="nameO" maxlength="14" placeholder="Oyunçu 2" />
+              </div>
+            </div>
+          </section>
 
-          <fieldset class="field field--row">
-            <label>
-              Hər gediş üçün vaxt (saniyə, 0 = limitsiz)
-              <input type="number" name="moveTime" min="0" max="120" value="0" />
-            </label>
-            <label>
-              Qarşılaşma uzunluğu
-              <select name="matchLength">
-                <option value="1">Tək oyun</option>
-                <option value="3">3-dən ən yaxşısı</option>
-                <option value="5">5-dən ən yaxşısı</option>
-                <option value="7">7-dən ən yaxşısı</option>
-              </select>
-            </label>
-          </fieldset>
+          <!-- Mövzu və skin — swatch-lər -->
+          <section class="sec">
+            <div class="sec__head">
+              <span class="sec__icon">🎨</span>
+              <h3 class="sec__title">Görkəm</h3>
+            </div>
 
-          <fieldset class="field">
-            <legend>Səs və effektlər</legend>
-            <label><input type="checkbox" name="sound" checked /> Səs effektləri</label>
-            <label><input type="checkbox" name="animations" checked /> Animasiyalar</label>
-            <label><input type="checkbox" name="hints" /> İpucları (vurğulanır)</label>
-            <label><input type="checkbox" name="confetti" checked /> Qələbədə konfetti</label>
-          </fieldset>
+            <div class="sub-label">Mövzu</div>
+            <div class="seg" role="radiogroup" aria-label="Mövzu">
+              <label class="seg__opt"><input type="radio" name="theme" value="dark" checked /><span>🌙 Tünd</span></label>
+              <label class="seg__opt"><input type="radio" name="theme" value="light" /><span>☀ Açıq</span></label>
+            </div>
+
+            <div class="sub-label" style="margin-top:14px">Skin</div>
+            <div class="skin-row">
+              <label class="skin-pick">
+                <input type="radio" name="skin" value="classic" checked />
+                <span class="skin-pick__preview skin-pick__preview--classic"></span>
+                <span class="skin-pick__name">Klassik</span>
+              </label>
+              <label class="skin-pick">
+                <input type="radio" name="skin" value="neon" />
+                <span class="skin-pick__preview skin-pick__preview--neon"></span>
+                <span class="skin-pick__name">Neon</span>
+              </label>
+              <label class="skin-pick">
+                <input type="radio" name="skin" value="minimal" />
+                <span class="skin-pick__preview skin-pick__preview--minimal"></span>
+                <span class="skin-pick__name">Minimal</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Qarşılaşma + vaxt -->
+          <section class="sec">
+            <div class="sec__head">
+              <span class="sec__icon">🏆</span>
+              <h3 class="sec__title">Qarşılaşma</h3>
+            </div>
+            <div class="sub-label">Uzunluq</div>
+            <div class="seg" role="radiogroup" aria-label="Qarşılaşma uzunluğu">
+              <label class="seg__opt"><input type="radio" name="matchLength" value="1" checked /><span>1 oyun</span></label>
+              <label class="seg__opt"><input type="radio" name="matchLength" value="3" /><span>3 oyundan</span></label>
+              <label class="seg__opt"><input type="radio" name="matchLength" value="5" /><span>5 oyundan</span></label>
+              <label class="seg__opt"><input type="radio" name="matchLength" value="7" /><span>7 oyundan</span></label>
+            </div>
+
+            <div class="sub-label" style="margin-top:14px">Hər gediş üçün vaxt</div>
+            <div class="time-row">
+              <input type="range" name="moveTime" min="0" max="60" step="5" value="0" id="moveTimeRange" />
+              <span class="time-row__value" id="moveTimeValue">Limitsiz</span>
+            </div>
+          </section>
+
+          <!-- Switch-lər -->
+          <section class="sec">
+            <div class="sec__head">
+              <span class="sec__icon">🔊</span>
+              <h3 class="sec__title">Səs və effektlər</h3>
+            </div>
+            <div class="switch-grid">
+              <label class="switch">
+                <input type="checkbox" name="sound" checked />
+                <span class="switch__track"><span class="switch__thumb"></span></span>
+                <span class="switch__text">Səs effektləri</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" name="animations" checked />
+                <span class="switch__track"><span class="switch__thumb"></span></span>
+                <span class="switch__text">Animasiyalar</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" name="hints" />
+                <span class="switch__track"><span class="switch__thumb"></span></span>
+                <span class="switch__text">İpuçları</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" name="confetti" checked />
+                <span class="switch__track"><span class="switch__thumb"></span></span>
+                <span class="switch__text">Konfetti</span>
+              </label>
+            </div>
+          </section>
         </div>
 
         <footer class="modal__footer">
@@ -254,7 +384,8 @@
         <p class="result__sub" id="result-sub">3 gedişdə qələbə</p>
         <div class="result__actions">
           <button class="btn btn-primary" id="btn-play-again">↻ Yenidən oyna</button>
-          <button class="btn btn-ghost" id="btn-result-menu">☰ Menyuya qayıt</button>
+          <button class="btn btn-secondary" id="btn-result-replay">▶ Təkrar oxut</button>
+          <button class="btn btn-ghost" id="btn-result-menu">☰ Menyu</button>
         </div>
       </div>
     </dialog>
